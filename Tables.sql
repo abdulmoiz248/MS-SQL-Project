@@ -3,7 +3,8 @@ create table registered_users(
     name VARCHAR(100) not null,
     email VARCHAR(100) unique,
     password VARCHAR(100) not null,
-    phone_number VARCHAR(20) unique
+    phone_number VARCHAR(20) unique,
+    gender char, 	
 ); -- done
 
 
