@@ -3,32 +3,24 @@ create table registered_users(
     name VARCHAR(100) not null,
     email VARCHAR(100) unique,
     password VARCHAR(100) not null,
-    phone_number VARCHAR(20) unique,
-    gender char, 	
-); -- done
-
+    phone_number VARCHAR(20) unique
+	 street_address VARCHAR(255) not null,
+   city VARCHAR(100) not null,
+   postal_code VARCHAR(20) ,
+   country VARCHAR(100) not null,
+); -- np
 
 create table non_registered_users(
     name VARCHAR(100),
 	cookie int primary key
-); --done
-
-create table address(
-   address_id int IDENTITY(1,1) primary key,
-   street_address VARCHAR(255) not null,
-   city VARCHAR(100) not null,
-   postal_code VARCHAR(20) ,
-   country VARCHAR(100) not null,
-   user_id int,
-Foreign key (user_id) references registered_users(user_id),
-); --done
+); --np
 
 
 
 create table product_categories(
    category_id int IDENTITY(1,1) primary key,
    catrogry_name varchar(100) not null
-); --done
+); --np
 
 
 create table products(
@@ -36,11 +28,11 @@ create table products(
    name varchar(100) not null,
    category_id int,
    description varchar(max),
-   image_url varchar(max),
    price decimal not null,
    rating decimal
    Foreign key (category_id) references product_categories(category_id)
-); --done
+); --np
+
 
 
 
@@ -49,18 +41,15 @@ create table coupons(
   discount_percent decimal not null,
   start_date DATE,
   end_date DATE,
-  limit int
-);  --done
-
-
+  limit int,
+  status varchar(100)
+);  --mv
 
 create table shipping(
   shipping_id int IDENTITY(1,1) primary key,
   method varchar(100) not null,
   fees int,
-); --done
-
-
+); --np
 
 create table orders(
    order_id int IDENTITY(1,1) primary key,
@@ -68,14 +57,12 @@ create table orders(
    date DATE not null,
    time Time not null,
    total_amount int not null,
-   address_id int,
    coupon_id int,
    shipping_id int,
    payment_method varchar(100) not null,
    payment_status varchar(100) not null,
 
     Foreign key (user_id) references registered_users(user_id),
-	Foreign key (address_id) references address(address_id),
 	Foreign key (coupon_id) references coupons(coupon_id),
 	Foreign key (shipping_id) references shipping(shipping_id)
 );
@@ -158,7 +145,7 @@ create table reviews(
   review varchar(max),
   Foreign key (product_id) references products(product_id),
   Foreign key (user_id) references registered_users(user_id),
- ); --done
+ );
 
 create table prebooking(
   id int IDENTITY(1,1) primary key,
@@ -168,42 +155,41 @@ create table prebooking(
   Foreign key (product_id) references products(product_id),
   Foreign key (user_id) references registered_users(user_id),
 
-); --done
+);
 
 create table retailers(
    retailer_id int IDENTITY(1,1) primary key,
    name varchar(100) not null,
+   discount decimal,
    phone varchar(25) unique 
-);--done
+);
 
 create table inventory(
    id int IDENTITY(1,1) primary key,
    product_id int,
-   quantity int not null,
+   qunatity int not null,
    retailer_id int,
    date_modified date,
     Foreign key (retailer_id) references retailers(retailer_id),
    Foreign key (product_id) references products(product_id)
-);  --autofill 
+); 
 
- 
 create table retailers_bill(
    bill_id int IDENTITY(1,1) primary key,
    retailer_id int,
    bill int,
-   discount decimal,
    date DATE,
    product_id int,
    Foreign key (retailer_id) references retailers(retailer_id),
   Foreign key (product_id) references products(product_id)
 );
-  
-create table revenue(
+
+create table income_expenditure(
    date DATE primary key,
    income decimal not null,
    expendtiure decimal not null,
    net_amount decimal
-); --autocalculate
+);
 
 create table customer_support_tickets(
    ticketnumber int IDENTITY(100,10) primary key,
@@ -212,5 +198,5 @@ create table customer_support_tickets(
    status varchar(max) 
 
    Foreign key (user_id) references registered_users(user_id)
-); --done
+);
 
