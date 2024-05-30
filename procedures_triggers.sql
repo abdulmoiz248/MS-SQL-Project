@@ -31,3 +31,36 @@ begin
 	   insert into revenue(date,income	,expendtiure,net_amount) values (@date,0,@bill,-@bill)
 	 end --end of revenue else
 end
+
+create procedure prebookingpro 
+  @user_id int,
+  @product_id int, 
+  @date date
+as
+begin 
+   declare @quantity int
+   select @quantity= quantity from inventory where product_id=@product_id
+   if @quantity>0  
+   begin
+      print 'Already Exists'
+      return
+   end
+   insert into prebooking values (@user_id,@product_id,@date)
+end
+
+create trigger delete_prebookings 
+on
+inventory after 
+insert,update 
+as
+begin
+  declare @quantity int
+  declare @id int
+  select @id=product_id from inserted
+  select @quantity=quantity from inventory where product_id=@id
+  if (@quantity>0)
+  begin
+
+   delete from prebooking where product_id=@id
+  end
+end
