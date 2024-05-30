@@ -30,3 +30,34 @@ create table products(
    rating decimal
    Foreign key (category_id) references product_categories(category_id)
 ); 
+create table retailers(
+   retailer_id int IDENTITY(1,1) primary key,
+   name varchar(100) not null,
+   phone varchar(25) unique 
+);
+create table inventory(
+   id int IDENTITY(1,1) primary key,
+   product_id int,
+   quantity int not null,
+   retailer_id int,
+   date_modified date,
+    Foreign key (retailer_id) references retailers(retailer_id),
+   Foreign key (product_id) references products(product_id)
+); 
+create table retailers_bill(
+   bill_id int IDENTITY(1,1) primary key,
+   retailer_id int,
+   bill int,
+   discount decimal,
+   date DATE,
+   product_id int,
+   Foreign key (retailer_id) references retailers(retailer_id),
+  Foreign key (product_id) references products(product_id)
+);
+
+create table revenue(
+   date DATE primary key,
+   income decimal not null,
+   expendtiure decimal not null,
+   net_amount decimal
+); --autocalculate
