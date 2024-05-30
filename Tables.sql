@@ -61,3 +61,13 @@ create table revenue(
    expendtiure decimal not null,
    net_amount decimal
 ); --autocalculate
+
+create table prebooking(
+  id int IDENTITY(1,1) primary key,
+  user_id int,
+  product_id int,
+  date date,
+  Foreign key (product_id) references products(product_id),
+  Foreign key (user_id) references registered_users(user_id),
+
+); 
