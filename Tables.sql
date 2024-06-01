@@ -101,3 +101,12 @@ create table cart_items(
   Foreign key (product_id) references products(product_id),
   Foreign key(cart_id) references cart(cart_id)
 );
+create table reviews(
+  review_id int IDENTITY(1,1) primary key,
+  product_id int,
+  user_id int,
+  rating decimal not null,
+  review varchar(max),
+  Foreign key (product_id) references products(product_id),
+  Foreign key (user_id) references registered_users(user_id),
+ );
