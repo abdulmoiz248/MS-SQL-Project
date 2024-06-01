@@ -88,6 +88,7 @@ create table cart(
   user_id int,
   cookie int,
   total int,
+  date date,
   Foreign key (user_id) references registered_users(user_id),
   Foreign key (cookie) references non_registered_users(cookie),
 );
