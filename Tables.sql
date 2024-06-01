@@ -71,3 +71,33 @@ create table prebooking(
   Foreign key (user_id) references registered_users(user_id),
 
 ); 
+create table coupons(
+  coupon_id int IDENTITY(1000,110) primary key,
+  discount_percent decimal not null,
+  start_date DATE,
+  end_date DATE,
+  limit int,
+);
+create table shipping(
+  shipping_id int IDENTITY(1,1) primary key,
+  method varchar(100) not null,
+  fees int,
+);
+create table cart(
+  cart_id int IDENTITY(1,1) primary key,
+  user_id int,
+  cookie int,
+  total int,
+  Foreign key (user_id) references registered_users(user_id),
+  Foreign key (cookie) references non_registered_users(cookie),
+);
+
+create table cart_items(
+  item_id int IDENTITY(1,1) primary key,
+  product_id int,
+  qunatity int,
+  total int,
+  cart_id int
+  Foreign key (product_id) references products(product_id),
+  Foreign key(cart_id) references cart(cart_id)
+);
