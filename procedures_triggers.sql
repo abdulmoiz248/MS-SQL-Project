@@ -64,3 +64,49 @@ begin
    delete from prebooking where product_id=@id
   end
 end
+create procedure add_cart_items
+ @cart_id int,
+ @product_id int,
+ @quantity int
+ as
+begin
+   declare @amount int,
+   @invquantity int,
+   @price int
+   
+   select @invquantity=quantity from inventory where product_id=@product_id
+   if(@invquantity=0) 
+   begin
+   print 'NO items in inventory'
+   return
+   end
+
+   if(@invquantity-@quantity<0)
+   begin
+   print 'NOT ENOUGH ITEMS AVAILABLE'
+   return
+   end
+
+   select @price=price from products where product_id=@product_id
+   set @amount=@price*@quantity
+
+   insert into cart_items (cart_id,product_id,qunatity,total) values (@cart_id,@product_id,@quantity,@amount) 
+   update cart set total=total+@amount where cart_id=@cart_id
+  
+end
+
+drop procedure add_cart_items
+
+create procedure insertreviews
+  @product_id int,
+  @user_id int,
+  @rating decimal,
+  @review varchar(max)
+as begin
+  if @rating>5 
+  begin
+      return
+  end
+  update products set rating=(@rating+rating)/2 where product_id=@product_id
+  insert into reviews (product_id,user_id,rating,review) values (@product_id,@user_id,@rating,@review)
+end
