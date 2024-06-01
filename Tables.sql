@@ -111,3 +111,39 @@ create table reviews(
   Foreign key (product_id) references products(product_id),
   Foreign key (user_id) references registered_users(user_id),
  );
+
+create table orders(
+   order_id int IDENTITY(1,1) primary key,
+   user_id int,
+   date DATE not null,
+   total_amount int not null,
+   coupon_id int,
+   shipping_id int,
+   payment_method varchar(100) not null,
+   payment_status varchar(100) not null,
+
+    Foreign key (user_id) references registered_users(user_id),
+	Foreign key (coupon_id) references coupons(coupon_id),
+	Foreign key (shipping_id) references shipping(shipping_id)
+);
+
+
+
+create table order_items(
+   item_id int IDENTITY(1,1) primary key,
+   order_id int,
+   product_id int,
+   qunatity int not null,
+   amount int not null,
+
+   Foreign key (product_id) references products(product_id),
+   Foreign key (order_id) references orders(order_id)
+);
+
+create table order_tracking(
+   tracking_id int IDENTITY(1,1) primary key,
+   order_id int,
+   status varchar(100) not null,
+   date date,
+   Foreign key (order_id) references orders(order_id)
+);
