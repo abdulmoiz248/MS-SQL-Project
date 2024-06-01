@@ -197,23 +197,31 @@ begin
    delete from cart where cart_id=@cartid
 end
 
-create trigger shiftitems on orders after
-insert
-as
-begin
 
- declare @orderid int ,@product int ,
-   @quantity int, @cartid int, @userid int
-   select @orderid=order_id,@userid=user_id from inserted
-   select @cartid= cart_id from cart where user_id=@userid 
-    
- while exists (select 1 from cart_items where cart_id=@cartid)
- begin
-  select top 1 @product=product_id,@quantity=qunatity from cart_items
-  exec add_order_items
-  @order_id=@orderid,
-  @product_id =@product,
-  @quantity=@quantity 
-  delete from cart_items where product_id=@product and cart_id=@cartid and qunatity=@quantity
- end
-end
+CREATE TRIGGER shiftitems
+ON orders
+AFTER INSERT
+AS
+BEGIN
+    DECLARE @orderid INT, @product INT, @quantity INT, @cartid INT, @userid INT,@amount int
+
+    -- Fetch the inserted order_id and user_id
+    SELECT @orderid = order_id, @userid = user_id FROM inserted;
+
+    -- Fetch the corresponding cart_id for the given user_id
+    SELECT @cartid = cart_id FROM cart WHERE user_id = @userid;
+
+    -- Loop to shift items from cart_items to order_items
+    WHILE EXISTS (SELECT 1 FROM cart_items WHERE cart_id = @cartid)
+    BEGIN
+        -- Fetch the top item from cart_items
+        SELECT TOP 1 @product = product_id, @quantity = qunatity ,@amount=total FROM cart_items WHERE cart_id = @cartid;
+
+        -- Insert the item into order_items
+        INSERT INTO order_items (order_id, product_id, qunatity,amount)
+        VALUES (@orderid, @product, @quantity,@amount);
+
+        -- Delete the item from cart_items
+        DELETE FROM cart_items WHERE product_id = @product AND cart_id = @cartid AND qunatity = @quantity;
+    END
+END;
