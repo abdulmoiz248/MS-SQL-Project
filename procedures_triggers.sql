@@ -197,7 +197,6 @@ begin
    delete from cart where cart_id=@cartid
 end
 
-
 CREATE TRIGGER shiftitems
 ON orders
 AFTER INSERT
@@ -221,7 +220,67 @@ BEGIN
         INSERT INTO order_items (order_id, product_id, qunatity,amount)
         VALUES (@orderid, @product, @quantity,@amount);
 
+		update orders set total_amount=total_amount+@amount where order_id=@orderid
+
         -- Delete the item from cart_items
         DELETE FROM cart_items WHERE product_id = @product AND cart_id = @cartid AND qunatity = @quantity;
     END
 END;
+
+create procedure add_payments
+   @order_id int,
+   @date date 
+as
+begin
+  declare @total_amount int,
+  @afterdiscount decimal,
+  @couponid int,
+  @discount int,
+  @shippingid int,
+  @shippingfees int,
+  @limit int, @enddate date
+
+   select @total_amount=total_amount,@shippingid=shipping_id,@couponid=coupon_id from orders where order_id=@order_id
+   select @shippingfees=fees from shipping where shipping_id=@shippingid
+   set @total_amount=@total_amount++@shippingfees
+   set @afterdiscount=@total_amount
+    
+if @couponid!= null 
+ begin
+  select @discount=discount_percent,@limit=limit,@enddate=end_date from coupons where coupon_id=@couponid
+  if  @limit!=0 and @enddate!=@date
+ begin
+   select @discount from coupons where coupon_id=@couponid
+   set @afterdiscount=@total_amount-@total_amount*@discount/100 +@shippingfees
+ end
+  
+ end --if begin end of coupon id
+
+  
+  print @afterdiscount 
+  insert payments (order_id,date,total_amount,after_discount) values (@order_id,@date,@total_amount,@afterdiscount)
+  update order_tracking set status='Delievered',date=@date where order_id=@order_id
+  update orders set payment_status='Cleared' where order_id=@order_id
+
+end
+
+
+create trigger addincome on payments
+after insert
+as
+begin
+ declare @income int,
+ @date date
+ select @income=after_discount,@date=date from inserted
+ if exists (select 1 from revenue where date=@date)
+ begin
+  update revenue set income=income+@income,net_amount=net_amount+@income where date=@date
+ end
+
+ else
+ begin
+  insert into revenue (date,income,expendtiure,net_amount) values (@date,@income,0,@income)
+ end
+end
+
+
