@@ -147,3 +147,12 @@ create table order_tracking(
    date date,
    Foreign key (order_id) references orders(order_id)
 );
+create table payments(
+   payment_id int IDENTITY(1,1) primary key,
+   order_id int,
+   total_amount int not null,
+   after_discount int not null,
+   date date not null,
+
+   Foreign key (order_id) references orders(order_id)
+);
