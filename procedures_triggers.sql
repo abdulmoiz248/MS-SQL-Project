@@ -290,3 +290,29 @@ begin
    update order_tracking set status='Refund' where order_id=@order_id
 end
 
+CREATE TRIGGER delete_prebookings
+ON inventory
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    DECLARE @quantity INT;
+    DECLARE @id INT;
+    
+    -- Get the product_id and updated quantity from the inserted/updated rows
+    SELECT @id = product_id, @quantity = quantity
+    FROM inserted;
+    
+    -- Check the available quantity in inventory
+    SELECT @quantity = quantity
+    FROM inventory
+    WHERE product_id = @id;
+    
+    -- If the quantity is greater than 0
+    IF (@quantity > 0)
+    BEGIN
+        -- Delete the prebookings according to the available quantity
+        DELETE TOP (@quantity)
+        FROM prebooking
+        WHERE product_id = @id;
+    END
+END;
