@@ -176,3 +176,22 @@ create table return_refunds(
 	Foreign key (product_id) references products(product_id),
     Foreign key (order_id) references orders(order_id)
 );
+create table inventory_audit(
+   id int IDENTITY(1,1) primary key,
+   product_id int,
+   quantity int not null,
+   retailer_id int,
+   date_modified date,
+    Foreign key (retailer_id) references retailers(retailer_id),
+   Foreign key (product_id) references products(product_id)
+);
+
+create table prebooking_audit(
+  id int IDENTITY(1,1) primary key,
+  user_id int,
+  product_id int,
+  date date,
+  Foreign key (product_id) references products(product_id),
+  Foreign key (user_id) references registered_users(user_id),
+
+);
