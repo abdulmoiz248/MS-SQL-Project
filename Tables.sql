@@ -156,3 +156,11 @@ create table payments(
 
    Foreign key (order_id) references orders(order_id)
 );
+create table customer_support_tickets(
+   ticketnumber int IDENTITY(100,10) primary key,
+   user_id int,
+   issue VARCHAR(MAX) not null,
+   status varchar(max) 
+
+   Foreign key (user_id) references registered_users(user_id)
+);
