@@ -48,22 +48,8 @@ begin
    insert into prebooking values (@user_id,@product_id,@date)
 end
 
-create trigger delete_prebookings 
-on
-inventory after 
-insert,update 
-as
-begin
-  declare @quantity int
-  declare @id int
-  select @id=product_id from inserted
-  select @quantity=quantity from inventory where product_id=@id
-  if (@quantity>0)
-  begin
 
-   delete from prebooking where product_id=@id
-  end
-end
+	
 create procedure add_cart_items
  @cart_id int,
  @product_id int,
@@ -95,7 +81,6 @@ begin
   
 end
 
-drop procedure add_cart_items
 
 create procedure insertreviews
   @product_id int,
@@ -283,4 +268,25 @@ begin
  end
 end
 
+create procedure refunds
+    @user_id INT,
+    @product_id INT, 
+	@order_id int,
+	@quantity int,
+    @reason VARCHAR(MAX),
+	@date date
+as
+begin
+   IF NOT EXISTS (SELECT 1 FROM orders WHERE order_id = @order_id) 
+   begin
+   print 'Order Doesnot Exists in record'
+   return
+   end
+   insert into return_refunds (user_id,product_id,order_id,reason,qunatity,date) values (@user_id,@product_id,@order_id,@reason,@quantity,@date)
+   update inventory set quantity=quantity+@quantity where product_id=@product_id
+ declare @price int
+ select @price=price from products where product_id=@product_id
+   update revenue set expendtiure=expendtiure+@quantity*@price where date=@date  
+   update order_tracking set status='Refund' where order_id=@order_id
+end
 
