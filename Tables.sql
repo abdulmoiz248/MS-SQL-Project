@@ -96,7 +96,7 @@ create table cart(
 create table cart_items(
   item_id int IDENTITY(1,1) primary key,
   product_id int,
-  qunatity int,
+  quantity int,
   total int,
   cart_id int
   Foreign key (product_id) references products(product_id),
@@ -133,7 +133,7 @@ create table order_items(
    item_id int IDENTITY(1,1) primary key,
    order_id int,
    product_id int,
-   qunatity int not null,
+   quantity int not null,
    amount int not null,
 
    Foreign key (product_id) references products(product_id),
@@ -163,4 +163,16 @@ create table customer_support_tickets(
    status varchar(max) 
 
    Foreign key (user_id) references registered_users(user_id)
+);
+create table return_refunds(
+    return_id int IDENTITY(1,1) primary key,
+    user_id INT,
+    product_id INT, 
+	order_id int,
+	quantity int,
+    reason VARCHAR(MAX) not null,
+	date DATE,
+	Foreign key (user_id) references registered_users(user_id),
+	Foreign key (product_id) references products(product_id),
+    Foreign key (order_id) references orders(order_id)
 );
