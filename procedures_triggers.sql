@@ -316,3 +316,27 @@ BEGIN
         WHERE product_id = @id;
     END
 END;
+
+
+create trigger auditprebooking
+on prebooking after delete
+as
+begin
+  declare @product_id int,@user_id int,@date date
+  select @product_id=product_id,@user_id=user_id,@date=date from deleted
+
+ insert into prebooking_audit (product_id,user_id,date) values (@product_id,@user_id,@date)
+end
+
+create trigger auditinvetory
+on inventory after insert,update
+as begin
+ declare  @product_id int,@quantity int,@retailer_id int,@date_modified date
+ select @product_id=product_id from inserted
+ select @quantity=quantity from inserted
+ select @retailer_id=retailer_id from inserted
+ select @date_modified=date_modified from inserted
+
+ insert into inventory_audit (product_id,quantity,retailer_id,date_modified) values (@product_id,@quantity,@retailer_id,@date_modified)
+end
+
