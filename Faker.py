@@ -6,7 +6,7 @@ import random
 # Connection details
 Driver = 'SQL Server'
 server = 'DESKTOP-EQ55Q8H'
-database = 'project'
+database = 'final'
 
 # Connection string
 connection = f"DRIVER={{{Driver}}};SERVER={server};DATABASE={database};Trusted_Connection=yes;"
@@ -537,7 +537,10 @@ try:
 
     def fill_inventory_for_1_year(year):
       for date in getdate(year):
-       insert_rb_fill_inv(random.randint(1,total_products()),random.randint(1,100),random.randint(10,100),random.randint(5,15),date)
+          try :
+           insert_rb_fill_inv(random.randint(1,total_products()),random.randint(1,100),random.randint(10,100),random.randint(5,15),date)
+          except Exception as e:
+              continue
 
     def data_prebookings(year):
             cursor.execute('SELECT COUNT(*) FROM registered_users')
@@ -1184,7 +1187,6 @@ try:
 
     def start_for_1_year(year):
      add_1000_users()
-     add_1000_users()
      print ('Added 2000 users')
      add_100_retailers()
      print('Added 100 retailers')
@@ -1210,10 +1212,14 @@ try:
      print('Added data for year=',year)
 
 
-    #add_products_and_Cats()
-    #fillshipping()
+    add_products_and_Cats()
+    fillshipping()
+    start_for_1_year(2019)
+    start_for_1_year(2020)
     start_for_1_year(2021)
-
+    start_for_1_year(2022)
+    start_for_1_year(2023)
+    
 
 
     cursor.close()
@@ -1222,6 +1228,5 @@ try:
 except pyodbc.Error as ex:
     sqlstate = ex.args[1]
     print(f"Error connecting to the database: {sqlstate}")
-
 
 
