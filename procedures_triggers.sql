@@ -76,7 +76,7 @@ begin
    select @price=price from products where product_id=@product_id
    set @amount=@price*@quantity
 
-   insert into cart_items (cart_id,product_id,qunatity,total) values (@cart_id,@product_id,@quantity,@amount) 
+   insert into cart_items (cart_id,product_id,quantity,total) values (@cart_id,@product_id,@quantity,@amount) 
    update cart set total=total+@amount where cart_id=@cart_id
   
 end
@@ -146,7 +146,7 @@ begin
    select @price=price from products where product_id=@product_id
    set @amount=@price*@quantity
 
-   insert into order_items (order_id,product_id,qunatity,amount) values (@order_id,@product_id,@quantity,@amount) 
+   insert into order_items (order_id,product_id,quantity,amount) values (@order_id,@product_id,@quantity,@amount) 
    update orders set total_amount=total_amount+@amount where order_id=@order_id
    update inventory set quantity=quantity-@quantity where product_id=@product_id
 
@@ -199,16 +199,16 @@ BEGIN
     WHILE EXISTS (SELECT 1 FROM cart_items WHERE cart_id = @cartid)
     BEGIN
         -- Fetch the top item from cart_items
-        SELECT TOP 1 @product = product_id, @quantity = qunatity ,@amount=total FROM cart_items WHERE cart_id = @cartid;
+        SELECT TOP 1 @product = product_id, @quantity = quantity ,@amount=total FROM cart_items WHERE cart_id = @cartid;
 
         -- Insert the item into order_items
-        INSERT INTO order_items (order_id, product_id, qunatity,amount)
+        INSERT INTO order_items (order_id, product_id, quantity,amount)
         VALUES (@orderid, @product, @quantity,@amount);
 
 		update orders set total_amount=total_amount+@amount where order_id=@orderid
 
         -- Delete the item from cart_items
-        DELETE FROM cart_items WHERE product_id = @product AND cart_id = @cartid AND qunatity = @quantity;
+        DELETE FROM cart_items WHERE product_id = @product AND cart_id = @cartid AND quantity = @quantity;
     END
 END;
 
@@ -242,7 +242,6 @@ if @couponid!= null
  end --if begin end of coupon id
 
   
-  print @afterdiscount 
   insert payments (order_id,date,total_amount,after_discount) values (@order_id,@date,@total_amount,@afterdiscount)
   update order_tracking set status='Delievered',date=@date where order_id=@order_id
   update orders set payment_status='Cleared' where order_id=@order_id
@@ -282,7 +281,7 @@ begin
    print 'Order Doesnot Exists in record'
    return
    end
-   insert into return_refunds (user_id,product_id,order_id,reason,qunatity,date) values (@user_id,@product_id,@order_id,@reason,@quantity,@date)
+   insert into return_refunds (user_id,product_id,order_id,reason,quantity,date) values (@user_id,@product_id,@order_id,@reason,@quantity,@date)
    update inventory set quantity=quantity+@quantity where product_id=@product_id
  declare @price int
  select @price=price from products where product_id=@product_id
@@ -318,15 +317,8 @@ BEGIN
 END;
 
 
-create trigger auditprebooking
-on prebooking after delete
-as
-begin
-  declare @product_id int,@user_id int,@date date
-  select @product_id=product_id,@user_id=user_id,@date=date from deleted
 
- insert into prebooking_audit (product_id,user_id,date) values (@product_id,@user_id,@date)
-end
+
 
 create trigger auditinvetory
 on inventory after insert,update
@@ -339,4 +331,3 @@ as begin
 
  insert into inventory_audit (product_id,quantity,retailer_id,date_modified) values (@product_id,@quantity,@retailer_id,@date_modified)
 end
-
