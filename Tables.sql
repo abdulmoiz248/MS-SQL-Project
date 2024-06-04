@@ -8,7 +8,7 @@ create table registered_users(
     city VARCHAR(100) not null,
     postal_code VARCHAR(20) ,
     country VARCHAR(100) not null,
-	gender char
+	gender char,
 ); 
 
 create table non_registered_users(
@@ -43,7 +43,9 @@ create table inventory(
    date_modified date,
     Foreign key (retailer_id) references retailers(retailer_id),
    Foreign key (product_id) references products(product_id)
-); 
+);
+
+
 create table retailers_bill(
    bill_id int IDENTITY(1,1) primary key,
    retailer_id int,
@@ -60,8 +62,7 @@ create table revenue(
    income decimal not null,
    expendtiure decimal not null,
    net_amount decimal
-); --autocalculate
-
+); 
 create table prebooking(
   id int IDENTITY(1,1) primary key,
   user_id int,
@@ -147,6 +148,7 @@ create table order_tracking(
    date date,
    Foreign key (order_id) references orders(order_id)
 );
+
 create table payments(
    payment_id int IDENTITY(1,1) primary key,
    order_id int,
@@ -156,6 +158,7 @@ create table payments(
 
    Foreign key (order_id) references orders(order_id)
 );
+
 create table customer_support_tickets(
    ticketnumber int IDENTITY(100,10) primary key,
    user_id int,
@@ -164,6 +167,7 @@ create table customer_support_tickets(
 
    Foreign key (user_id) references registered_users(user_id)
 );
+
 create table return_refunds(
     return_id int IDENTITY(1,1) primary key,
     user_id INT,
@@ -176,6 +180,7 @@ create table return_refunds(
 	Foreign key (product_id) references products(product_id),
     Foreign key (order_id) references orders(order_id)
 );
+
 create table inventory_audit(
    id int IDENTITY(1,1) primary key,
    product_id int,
